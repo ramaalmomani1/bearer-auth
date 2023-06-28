@@ -1,7 +1,5 @@
 'use strict'
 
-require('dotenv').config()
-
 const { app } = require("../src/server");
 const { DB } = require("../src/auth/models/index");
 const supertest = require('supertest');
@@ -22,20 +20,25 @@ describe('Test the signin & signup endpoints', () => {
 
   it(' POST to /signup to create a new user.  ', async () => {
     const result = await mockServer.post('/signup').send({
-      userName: 'rama1',
+      userName: 'rama',
       password: '1234'
     });
     expect(result.status).toEqual(201);
   });
 
-  const base = base64.encode('rama1:1234')
-  it('signin test' , async () =>{
-    //   const base = base64.encode('rama1:1234')
+  it('POST to /signin to login as a user (use basic auth).  ', async () => {
+    const req = {
+      headers: {
+        authorization: `Basic ${base64.encode('rama:1234')}`
+      },
+      body: {
+        userName: undefined
+      }
+    };
 
-    const res = await mockServer.post('/signin').set('Authorization', `Basic ${base}`)
-
-    expect(res.statusCode).toBe(200)
-    // expect(JSON.parse(res.text).message).toBe('This user is Authorized!!!')
-
-})
+    const res = {};
+    const next = jest.fn();
+    await basicAuthMiddleWare(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
 });
