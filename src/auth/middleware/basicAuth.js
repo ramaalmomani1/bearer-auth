@@ -16,7 +16,7 @@ module.exports = async (req, res, next) => {
 
         const [userName, password] = decodedData.split(':');
         // console.log(User)
-        User.basicAuthChecker(userName,password).then(data => {
+      await User.basicAuthChecker(userName,password).then(data => {
         console.log(data)
         req.user = data 
         next()
